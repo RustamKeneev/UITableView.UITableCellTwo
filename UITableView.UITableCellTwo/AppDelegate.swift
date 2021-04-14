@@ -10,11 +10,41 @@ import UIKit
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    var window: UIWindow?
+    
+    public  static var shared: AppDelegate?{
+        return UIApplication.shared.delegate as? AppDelegate
+    }
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        regularLaunching()
         return true
+    }
+    
+    func regularLaunching() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else {return}
+            self.window = UIWindow(frame: UIScreen.main.bounds)
+            let splashController = MainTwoViewController()
+            let navigationController = BaseNavigationVC(rootViewController: splashController)
+            self.window?.rootViewController = navigationController
+            self.window?.makeKeyAndVisible()
+        }
+    }
+    
+    func changeRootViewController(_ vc: UIViewController)  {
+        UIView.transition(with: window!,
+                          duration: 0.5,
+                          options: .transitionCrossDissolve,
+                          animations: {
+                            let oldState: Bool = UIView.areAnimationsEnabled
+                            UIView.setAnimationsEnabled(false)
+                            self.window!.rootViewController = vc
+                            UIView.setAnimationsEnabled(oldState)
+                          }, completion: nil)
     }
 
     // MARK: UISceneSession Lifecycle
